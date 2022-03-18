@@ -1,29 +1,26 @@
-import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom'
+import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import Layout from './Components/layout'
 import Home from './Components/Home/home'
 import NotFound from './Components/NotFound/notFound'
-import DownloadEthereumWallet from './Components/DownLoadEthereumWallet/downloadEthereumWallet'
-import ConnectWallet from './Components/ConnectWallet/connectWallet'
+import Authorize from './Services/Security/authorize'
+import NotAuthorized from './Components/NotAuthorized/notAuthorized'
+import AboutUs from './Components/AboutUs/aboutUs'
+import ContactUs from './Components/ContactUs/contactUs'
+import Wellcome from './Components/Wellcome/wellcome'
 
-const routes = (parm) =>
+const AppRoutes = () =>
 {
-    
-    function RequireAuth({ children }) {
-        
-        return true ? children : <Navigate to="/" replace />;
-    }
-
     return (
     <>
     <BrowserRouter>
         <Routes>
-            <Route path="/" element={<Layout userIsValid={parm.userIsValid}/>}>
+            <Route path="/" element={<Layout />}>
                 <Route index element={<Home />} />
-                <Route path="connectWallet" element={<ConnectWallet />} />
-                {/*<Route path="blogs" element={<Blogs />} />
-                <Route path="contact" element={<Contact />} />*/}
-                <Route path="*" element={<RequireAuth><NotFound /></RequireAuth>} />
-                <Route path="downloadEthereumWallet" element={<DownloadEthereumWallet />} />
+                <Route path="aboutUs" element={<Authorize><AboutUs /></Authorize>} />
+                <Route path="contactUs" element={<Authorize><ContactUs /></Authorize>} />
+                <Route path="*" element={<NotFound />} />
+                <Route path="notAuthorized" element={<NotAuthorized />} />
+                <Route path="wellcome" element={<Authorize><Wellcome /></Authorize>} />
             </Route>
         </Routes>
     </BrowserRouter>
@@ -31,4 +28,4 @@ const routes = (parm) =>
     );
 };
 
-export default routes;
+export default AppRoutes;

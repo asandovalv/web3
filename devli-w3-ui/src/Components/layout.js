@@ -1,10 +1,83 @@
-import { Outlet, NavLink} from "react-router-dom";
+import { useState } from "react";
+import { Outlet, NavLink, Navigate} from "react-router-dom";
+import { validateCurrentAccount, connectAccount, disconnectAccount, getCurrentAccount} from "../Services/Security/accounts";
 import './layout.css'
-function Layout(parm) {
 
+function Layout() {
+  let shouldEnable = validateCurrentAccount('CurrentAccount');
+
+  const [walletAction, setWalletAction] = useState(""); 
   
-  const userIsValid = parm.userIsValid;
+  window.onload = () => {
+    if(typeof(window.ethereum) == 'undefined'){
+      setWalletAction("Install Wallet");
+    }else{
+      if(validateCurrentAccount('CurrentAccount')){
+        setWalletAction("Disconnect Wallet");
+      }else{
+        setWalletAction("Connect Wallet")
+      }
+      
+    }
+    return;
+  }
+
+  // For now, 'eth_accounts' will continue to always return an array
+  const handleAccountsChanged = (accounts) => {
+    if (typeof (accounts[0]) === 'undefined'){
+      disconnectAccount();
+      
+    } else if (accounts[0] !== getCurrentAccount('CurrentAccount')) {
+      disconnectAccount();
+      connectAccount(accounts[0]);
+      
+      // Do any other work!
+    }
+    window.location.reload();
+  }
+
+  const handleChainChanged = (_chainId) => {
+    // We recommend reloading the page, unless you must do otherwise
+    window.location.reload();
+  }
+
+  if(validateCurrentAccount('CurrentAccount')){
+    // Note that this event is emitted on page load.
+    // If the array of accounts is non-empty, you're already
+    // connected.
+    window.ethereum.on('accountsChanged', handleAccountsChanged);
+    window.ethereum.on('chainChanged', handleChainChanged);
+  }
   
+  
+  
+
+  const walletBtnOnClick = async (e) => {
+    e.preventDefault();
+    if(!validateCurrentAccount('CurrentAccount')){
+    
+      if(typeof(window.ethereum) == 'undefined'){
+        window.open("https://metamask.io/download/", "_self");
+          
+      }else if(window.ethereum.isConnected()){
+        await window.ethereum.request({ method: 'eth_requestAccounts' })
+        .then((result) => {
+          debugger;
+          console.log("result: ", result);
+          connectAccount(result[0]);
+          window.location.href = "/Wellcome";
+        })
+        .catch((error) => {
+          console.log("error: ", error);
+        });
+      }
+    }else{
+      disconnectAccount();
+      window.location.reload();
+    }
+    return;
+  }
+
   const openCloseMenu = (x)=> {
     if(x){
       var cls = x.currentTarget.className;
@@ -19,7 +92,9 @@ function Layout(parm) {
         document.getElementsByClassName('outlet')[0].className = 'outlet fullpage';
       }
     }
+    return;
   }
+
   return (
     
     <>
@@ -28,7 +103,7 @@ function Layout(parm) {
       <div>
       <div className="topnav">
           
-          <div style={userIsValid?{display: ""}:{display: "none"}} className="container" onClick={(event) => openCloseMenu(event)}>
+          <div style={shouldEnable?{display: ""}:{display: "none"}} className="container" onClick={(event) => openCloseMenu(event)}>
           
             <div className="bar1"></div>
             <div className="bar2"></div>
@@ -36,30 +111,32 @@ function Layout(parm) {
             
           </div>
 
-          <NavLink style={userIsValid?{display: ""}:{display: "none"}} to="/" activeClassName="active"><i className="fa fa-fw fa-home"></i> Home</NavLink>
-          <NavLink style={userIsValid?{display: ""}:{display: "none"}} to="/aboutUs" activeClassName="active"><i className="fa fa-users"></i> About Us</NavLink>
-          <NavLink style={userIsValid?{display: ""}:{display: "none"}} to="/contact" activeClassName="active"><i className="fa fa-compress"></i> Contact</NavLink>
+          <NavLink to="/" ><i className="fa fa-fw fa-home"></i> Home</NavLink>
+          <NavLink style={shouldEnable?{display: ""}:{display: "none"}} to="/aboutUs" ><i className="fa fa-users"></i> About Us</NavLink>
+          <NavLink style={shouldEnable?{display: ""}:{display: "none"}} to="/contact" ><i className="fa fa-compress"></i> Contact</NavLink>
           
           <div className="topnav-right">
-            <NavLink to="/connectWallet" activeClassName="active"><i className="fa fa-money"></i> Conect Wallet</NavLink>
+            <NavLink to="#" onClick={(e) => {walletBtnOnClick(e)}} >
+              {/* <i className="fa fa-money"></i> */}
+               { walletAction }</NavLink>
           </div>
-          <div style={userIsValid?{display: ""}:{display: "none"}} className="dropdown">
-            <button className="dropbtn">Dropdown 
+          <div style={shouldEnable?{display: ""}:{display: "none"}} className="dropdown">
+            <button className="dropbtn">Options 
               <i className="fa fa-caret-down"></i>
             </button>
             <div className="dropdown-content">
-              <NavLink to="/link1" activeClassName="active">Link 1</NavLink>
-              <NavLink to="/link2" activeClassName="active">Link 2</NavLink>
-              <NavLink to="/link3" activeClassName="active">Link 3</NavLink>
+              <NavLink to="/option1" >Option 1</NavLink>
+              <NavLink to="/option2" >Option 2</NavLink>
+              <NavLink to="/option3" >Option 3</NavLink>
             </div>
           </div>
       </div>
       {/* Side Bar */}
-      <div style={userIsValid?{display: ""}:{display: "none"}} className="sidebar hide">
-        <NavLink to="/" activeClassName="active"><i className="fa fa-fw fa-home"></i> Home</NavLink>
-        <NavLink to="/link5" activeClassName="active"><i className="fa fa-fw fa-wrench"></i> Services</NavLink>
-        <NavLink to="/link6" activeClassName="active"><i className="fa fa-fw fa-user"></i> Clients</NavLink>
-        <NavLink to="/link7" activeClassName="active"><i className="fa fa-fw fa-envelope"></i> Contact</NavLink>
+      <div style={shouldEnable?{display: ""}:{display: "none"}} className="sidebar hide">
+        <NavLink to="/" ><i className="fa fa-fw fa-home"></i> Home</NavLink>
+        <NavLink to="/services" ><i className="fa fa-fw fa-wrench"></i> Services</NavLink>
+        <NavLink to="/aboutUs" ><i className="fa fa-fw fa-user"></i> About Us</NavLink>
+        <NavLink to="/contactUs" ><i className="fa fa-fw fa-envelope"></i> Contact Us</NavLink>
       </div>
       <div className="outlet fullpage">
         <Outlet />
