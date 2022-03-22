@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Outlet, NavLink, Navigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Outlet, NavLink } from "react-router-dom";
 import { validateCurrentAccount, connectAccount, disconnectAccount, getCurrentAccount} from "../Services/Security/accounts";
 import './layout.css'
 
@@ -8,7 +8,7 @@ function Layout() {
 
   const [walletAction, setWalletAction] = useState(""); 
   
-  window.onload = () => {
+  useEffect(()=>{
     if(typeof(window.ethereum) == 'undefined'){
       setWalletAction("Install Wallet");
     }else{
@@ -19,8 +19,10 @@ function Layout() {
       }
       
     }
-    return;
-  }
+  },[walletAction])
+    
+    
+  
 
   // For now, 'eth_accounts' will continue to always return an array
   const handleAccountsChanged = (accounts) => {
