@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, NavLink } from "react-router-dom";
-import { validateCurrentAccount, connectAccount, disconnectAccount, getCurrentAccount} from "../Services/Security/accounts";
+import { validateCurrentAccount, connectAccount, disconnectAccount, getCurrentAccount} from "../../Services/Security/accounts";
 import './layout.css'
 
 function Layout() {

@@ -1,5 +1,5 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
-import Layout from './Components/layout'
+import Layout from './Components/Layout/layout'
 import Home from './Components/Home/home'
 import NotFound from './Components/NotFound/notFound'
 import Authorize from './Services/Security/authorize'

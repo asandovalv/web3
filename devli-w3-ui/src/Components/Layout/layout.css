@@ -141,6 +141,7 @@
     position: fixed;
     z-index: 0;
     left: 0;
+    top: 49px;
     background-color: #111;
     overflow-x: hidden;
     padding-top: 16px;
@@ -185,6 +186,10 @@
       padding-bottom: 5px;
       background-color: #5dc3f6;
       height: 1000px;
+      position: absolute;
+      z-index: -10;
+      
+      width: 100%;
   }
 
   .outlet.fullpage{

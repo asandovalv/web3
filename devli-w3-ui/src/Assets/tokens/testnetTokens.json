@@ -5,7 +5,7 @@
     "symbol": "ETH",
     "decimals": 18,
     "address": "0xA6FA4fB5f76172d178d61B04b0ecd319C5d1C0aa",
-    "logoURI": "https://wallet-asset.matic.network/img/tokens/eth.svg",
+    "logoURI": "eth",
     "tags": [
       "erc20",
       "pos",
@@ -21,7 +21,7 @@
     "symbol": "MATIC",
     "decimals": 18,
     "address": "0x0000000000000000000000000000000000001010",
-    "logoURI": "https://wallet-asset.matic.network/img/tokens/eth.svg",
+    "logoURI": "matic",
     "tags": [
       "erc20",
       "plasma",
@@ -37,7 +37,7 @@
     "symbol": "DERC20",
     "decimals": 18,
     "address": "0xfe4F5145f6e09952a5ba9e956ED0C25e3Fa4c7F1",
-    "logoURI": "https://wallet-asset.matic.network/img/tokens/eth.svg",
+    "logoURI": "eth",
     "tags": [
       "erc20",
       "pos",
@@ -53,7 +53,7 @@
     "symbol": "TST",
     "decimals": 18,
     "address": "0x2d7882bedcbfddce29ba99965dd3cdf7fcb10a1e",
-    "logoURI": "https://wallet-asset.matic.network/img/tokens/eth.svg",
+    "logoURI": "etha",
     "tags": [
       "erc20",
       "pos",

@@ -6,7 +6,7 @@ const validateCurrentAccount = (value) => {
 
 const getCurrentAccount = (value) => {
     const currentAccount = localStorage.getItem(value);
-    return currentAccount?JSON.stringify(currentAccount):null;
+    return currentAccount?currentAccount:null;
 }
 
 const setCurrentAccount = (value, obj) => {
