@@ -1,5 +1,6 @@
 
 {
+    "is_testnet": "true",
     "chainid":"80001",
     "polygonmaticapiurl":"https://api-testnet.polygonscan.com/api",
     "polygonmaticapikey":"457MXR9M9WQSHTAEQX54JA5GIN6X9IPM2E"

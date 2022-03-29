@@ -1,0 +1,27 @@
+
+
+  .token-list-wrap{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: 5px 5px 5px 5px;  
+  }
+
+  .token-list{
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    margin: 5px 5px 5px 5px;  
+  }
+  
+  img{
+      width: 100%;
+      height: 100%;
+  }
+
+  

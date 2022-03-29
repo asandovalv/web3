@@ -3,7 +3,7 @@ const Home = () => {
     
       return (
       <>
-        <h1>Hi, I am a Home Page!!!</h1>
+        <h1>Wellcome to Devli-Fi Web 3.0</h1>
       </>
       );
     

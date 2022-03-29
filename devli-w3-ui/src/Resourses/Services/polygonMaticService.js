@@ -35,9 +35,16 @@ const getERC20TokenAccountBalance = async (_address, _contractaddress) =>{
 
     const _headers = { 'Content-Type': 'application/json' }
 
-    return fetch(_uri, _headers);
+    try{
+        const response = await fetch(_uri, _headers); 
+        const data = await response.json();
+        return data;
+    }catch(error){
+        console.log(error);
+        return;
+    }
     
-        
+
 }
 
 export { getListOfERC20TokenTransferEvents, getERC20TokenAccountBalance };
