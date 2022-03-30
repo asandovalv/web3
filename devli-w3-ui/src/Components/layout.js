@@ -12,10 +12,12 @@ import useWeb3ConnectorStorage from "../Resourses/Locals/useWeb3ConnectorStorage
 
 
 function Layout() {
+  var is_testnet = JSON.parse(localStorage.getItem('IsTestNet'));
+  
   const [walletAction, setWalletAction] = useState(""); 
 
   const [web3, setWeb3] = useState(()=>{
-   debugger;
+   
    let _web3;
     if (typeof window.ethereum !== 'undefined') {
       _web3 = new Web3(window.ethereum);
@@ -39,27 +41,29 @@ function Layout() {
       }
       
     }
+
   },[walletAction])
     
 
 
   async function addNetwork() {
    
-debugger;
+
     if (typeof web3 !== 'undefined') {
-    
+        
         var network = 0;
         var netID;
         network = await web3.eth.net.getId();
         netID = network.toString();
         var params;
-        if (appconfig.is_testnet === "false") {
+        if (typeof(is_testnet) !== 'undefined' && !is_testnet) {
             if (netID === "137") {
                 //alert("Polygon Network has already been added to Metamask.");
                 return JSON.stringify({status: "OK"});;
             } else {
                 params = [{
-                    chainId: '0x89',
+                    //chainId: '0x89',
+                    chainId: '0xfa',
                     chainName: 'Matic Mainnet',
                     nativeCurrency: {
                         name: 'MATIC',
@@ -88,7 +92,7 @@ debugger;
                 }]
             }
         }
-        debugger;
+        
         window.ethereum.request({ method: 'wallet_addEthereumChain', params })
             .then((response) => {
               console.log('Success: ' , response);
@@ -116,8 +120,16 @@ debugger;
     window.location.reload();
   }
 
-  const handleChainChanged = (_chainId) => {
+  const handleChainChanged = async (_chainId) => {
     // We recommend reloading the page, unless you must do otherwise
+    if(_chainId==='0x13881'){
+      
+      localStorage.setItem('IsTestNet',JSON.stringify(true));
+    }else{
+      localStorage.setItem('IsTestNet',JSON.stringify(false));
+    }
+    
+    console.log(_chainId);
     window.location.reload();
   }
 
@@ -130,10 +142,10 @@ debugger;
   }
   
   
-  
 
   const walletBtnOnClick = async (e) => {
     e.preventDefault();
+    //is_testnet = JSON.parse(localStorage.getItem('IsTestNet'));
     if(!validateCurrentAccount('CurrentAccount')){
     
       if(typeof(window.ethereum) == 'undefined'){
@@ -179,6 +191,7 @@ debugger;
     return;
   }
 
+
   return (
     
     <>
@@ -195,7 +208,7 @@ debugger;
             <div className="bar3"></div>
             
           </div>
-
+          
           {/* <NavLink to="/home" ><i className="fa fa-fw fa-home"></i> Home</NavLink>
           <NavLink style={shouldEnable?{display: ""}:{display: "none"}} to="/aboutUs" ><i className="fa fa-users"></i> About Us</NavLink>
           <NavLink style={shouldEnable?{display: ""}:{display: "none"}} to="/contact" ><i className="fa fa-compress"></i> Contact</NavLink> */}
@@ -205,6 +218,9 @@ debugger;
               {/* <i className="fa fa-money"></i> */}
                { walletAction }</NavLink>
           </div>
+          
+            
+          
           <div style={shouldEnable?{display: ""}:{display: "none"}} className="dropdown">
             <button className="dropbtn"><span>Wallet </span>
               <i className="fa fa-caret-down"></i>
