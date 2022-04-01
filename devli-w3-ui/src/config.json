@@ -1,7 +1,32 @@
 
 {
-    "is_testnet": "true",
-    "chainid":"80001",
-    "polygonmaticapiurl":"https://api-testnet.polygonscan.com/api",
-    "polygonmaticapikey":"457MXR9M9WQSHTAEQX54JA5GIN6X9IPM2E"
+    "defaultChainId": "0xfa",
+    
+    
+    "polygonMaticApiUrl": "https://api-testnet.polygonscan.com/api",
+    "polygonMaticApikey": "457MXR9M9WQSHTAEQX54JA5GIN6X9IPM2E",
+    "maticMainNet": [{
+        "netId": "137",
+        "chainId": "0xfa",
+        "chainName": "Matic Mainnet",
+        "nativeCurrency": {
+            "name": "MATIC",
+            "symbol": "MATIC",
+            "decimals": "18"
+        },
+        "rpcUrls": "https://polygon-rpc.com/",
+        "blockExplorerUrls": "https://polygonscan.com/"
+        }],
+    "maticTestNet": [{
+        "netId": "80001",
+        "chainId": "0x13881",
+        "chainName": "Polygon Testnet",
+        "nativeCurrency": {
+            "name": "MATIC",
+            "symbol": "MATIC",
+            "decimals": "18"
+        },
+        "rpcUrls": "https://matic-mumbai.chainstacklabs.com",
+        "blockExplorerUrls": "https://mumbai.polygonscan.com/"
+    }]
 }
