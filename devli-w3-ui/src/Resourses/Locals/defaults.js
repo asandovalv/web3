@@ -1,23 +1,40 @@
 import appConfig from '../../config.json';
 
-function setDefaultNetworkSettings(chainId){
-    if(chainId==='0x13881'){
-        localStorage.setItem('DefaultNetworkSettings',JSON.stringify(appConfig.maticMainNet));
-      }else{
-        localStorage.setItem('DefaultNetworkSettings',JSON.stringify(appConfig.maticTestNet));
-      }
-    return; 
-}
+const validateNetWork = async (isTestNet, web3) => {
+  if(typeof web3 != 'undefined'){
 
-function getDefaultNetworkSettings(){
-    const defaultNetworkSettings = JSON.parse(localStorage.getItem('DefaultNetworkSettings'));
-    return defaultNetworkSettings;
-}
-
-function isTestNet(){
-    const defaultNetworkSettings = getDefaultNetworkSettings();
+    const netId = await web3.eth.getChainId();
     debugger;
-    return defaultNetworkSettings?.chainId==='0x13881'?true:false;
+    let chainDefaultSettings;
+    
+    if(isTestNet){
+      chainDefaultSettings = JSON.parse(appConfig.maticTestNet);
+    }else{
+      chainDefaultSettings = JSON.parse(appConfig.maticMainNet);
+    }
+    const result = web3.utils.hexToNumber(chainDefaultSettings[0].chainId) == netId;
+    return result;
+  }
+  return false;
 }
 
-export {setDefaultNetworkSettings, getDefaultNetworkSettings,isTestNet}
+const changeNetwork = async (isTestNet) => {
+  var chainDefaultSettings;
+  
+  if(isTestNet){
+    chainDefaultSettings = appConfig.maticTestNet;
+  }else{
+    chainDefaultSettings = appConfig.maticMainNet;
+  }
+  
+  
+  if (typeof window.ethereum === 'undefined') {
+      return false;
+  }
+  var params = JSON.parse(JSON.stringify(chainDefaultSettings));
+  var response = await window.ethereum.request({ method: 'wallet_addEthereumChain', params})
+  return response;
+}
+  
+
+export {validateNetWork, changeNetwork}

@@ -1,7 +1,11 @@
+import { AppContext } from "../../App";
 
 
-const validateCurrentAccount = (value) => {
-    return localStorage.getItem(value)?true:false;
+const validateCurrentAccount = async (web3) => {
+    const currentAccount = localStorage.getItem('CurrentAccount');
+    if(typeof web3 === 'undefined' || currentAccount == null) return false;
+    const accounts = await web3.eth.getAccounts();
+    return accounts[0] === currentAccount;
 }
 
 const getCurrentAccount = (value) => {
@@ -21,14 +25,11 @@ const setCurrentAccount = (value, obj) => {
 
 const connectAccount = (value) => {
     setCurrentAccount('CurrentAccount',value);
-    setCurrentAccount(value,{accountAddress:value});
     return;
 }
 
 const disconnectAccount = () => {
-    const accountAddres = getCurrentAccount('CurrentAccount');
     localStorage.removeItem('CurrentAccount');
-    localStorage.removeItem(accountAddres);
     return;
 }
 export {validateCurrentAccount, getCurrentAccount, setCurrentAccount, connectAccount, disconnectAccount};

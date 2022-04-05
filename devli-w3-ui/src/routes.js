@@ -6,7 +6,7 @@ import Authorize from './Services/Security/authorize'
 import NotAuthorized from './Components/NotAuthorized/notAuthorized'
 import AboutUs from './Components/AboutUs/aboutUs'
 import ContactUs from './Components/ContactUs/contactUs'
-import GeneralView from './Components/Wallet/GeneralView/generalView'
+import WalletView from './Components/Wallet/WalletView/walletView'
 import Resources from './Components/Resources/resources'
 
 const AppRoutes = () =>
@@ -22,7 +22,7 @@ const AppRoutes = () =>
                 <Route path="contactUs" element={<Authorize><ContactUs /></Authorize>} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="notAuthorized" element={<NotAuthorized />} />
-                <Route path="generalView" element={<Authorize><GeneralView /></Authorize>} />
+                <Route path="walletView" element={<Authorize><WalletView /></Authorize>} />
                 <Route path="resources" element={<Resources />} />
             </Route>
         </Routes>

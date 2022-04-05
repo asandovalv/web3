@@ -1,177 +1,162 @@
-import { useEffect, useState , useMemo} from "react";
+import { useContext, useEffect, useState} from "react";
 import { Outlet, NavLink } from "react-router-dom";
-import { validateCurrentAccount, connectAccount, disconnectAccount, getCurrentAccount} from "../Services/Security/accounts";
+import { validateCurrentAccount, connectAccount, disconnectAccount } from "../Services/Security/accounts";
 import { BsBox } from 'react-icons/bs'
 import { FaHome } from 'react-icons/fa'
-import Web3 from "web3/lib";
-import appconfig from '../config.json'
 import './layout.css'
-import useWeb3ConnectorStorage from "../Resourses/Locals/useWeb3ConnectorStorage";
+import {changeNetwork, validateNetWork} from '../Resourses/Locals/defaults';
+import { AppContext } from "../App";
 
 
 
 
 function Layout() {
-  var is_testnet = JSON.parse(localStorage.getItem('IsTestNet'));
-  
+  const [web3, isTestNet, setIsTestNet] = useContext(AppContext);
+
+   //Initialize text for wallet action button on top right window corner
   const [walletAction, setWalletAction] = useState(""); 
 
-  const [web3, setWeb3] = useState(()=>{
-   
-   let _web3;
-    if (typeof window.ethereum !== 'undefined') {
-      _web3 = new Web3(window.ethereum);
-      
-    } else if (typeof Web3.givenprovider !== 'undefined') {
-      _web3 = new Web3(Web3.givenprovider);
-    }
-    return _web3;   
-  });
+    
 
-  let shouldEnable = validateCurrentAccount('CurrentAccount');
+  let isAuthorized = false;
 
-  useEffect(()=>{
-    if(typeof(window.ethereum) == 'undefined'){
+  useEffect(async()=>{
+    isAuthorized = await validateCurrentAccount(web3);
+    if(typeof(web3) == 'undefined'){
       setWalletAction("Install Wallet");
     }else{
-      if(validateCurrentAccount('CurrentAccount')){
+      if(isAuthorized){
         setWalletAction("Disconnect Wallet");
       }else{
         setWalletAction("Connect Wallet")
       }
-      
     }
-
-  },[walletAction])
-    
-
-
-  async function addNetwork() {
-   
-
-    if (typeof web3 !== 'undefined') {
-        
-        var network = 0;
-        var netID;
-        network = await web3.eth.net.getId();
-        netID = network.toString();
-        var params;
-        if (typeof(is_testnet) !== 'undefined' && !is_testnet) {
-            if (netID === "137") {
-                //alert("Polygon Network has already been added to Metamask.");
-                return JSON.stringify({status: "OK"});;
-            } else {
-                params = [{
-                    //chainId: '0x89',
-                    chainId: '0xfa',
-                    chainName: 'Matic Mainnet',
-                    nativeCurrency: {
-                        name: 'MATIC',
-                        symbol: 'MATIC',
-                        decimals: 18
-                    },
-                    rpcUrls: ['https://polygon-rpc.com/'],
-                    blockExplorerUrls: ['https://polygonscan.com/']
-                }]
-            }
-        } else {
-            if (netID === "80001") {
-                //alert("Polygon Mumbai Network has already been added to Metamask.");
-                return JSON.stringify({status: "OK"});
-            } else {
-                params = [{
-                    chainId: '0x13881',
-                    chainName: 'Polygon Testnet',
-                    nativeCurrency: {
-                        name: 'MATIC',
-                        symbol: 'MATIC',
-                        decimals: 18
-                    },
-                    rpcUrls: ['https://matic-mumbai.chainstacklabs.com'],
-                    blockExplorerUrls: ['https://mumbai.polygonscan.com/']
-                }]
-            }
-        }
-        
-        window.ethereum.request({ method: 'wallet_addEthereumChain', params })
-            .then((response) => {
-              console.log('Success: ' , response);
-              return response;
-            })
-            .catch((error) => console.log("Error: ", error.message));
-    } else {
-        alert('Unable to locate a compatible web3 browser!');
-        return;
-    }
-} 
-  
-
-  // For now, 'eth_accounts' will continue to always return an array
-  const handleAccountsChanged = (accounts) => {
-    if (typeof (accounts[0]) === 'undefined'){
-      disconnectAccount();
       
-    } else if (accounts[0] !== getCurrentAccount('CurrentAccount')) {
-      disconnectAccount();
-      connectAccount(accounts[0]);
-      
-      // Do any other work!
-    }
+// For now, 'eth_accounts' will continue to always return an array
+const handleAccountsChanged = async (accounts) => {
+  if (typeof (accounts[0]) === 'undefined'){
+    disconnectAccount();
+    window.location.href = '/home';
+  } else if (isAuthorized) {
+    disconnectAccount();
+    connectAccount(accounts[0]);
     window.location.reload();
-  }
-
-  const handleChainChanged = async (_chainId) => {
-    // We recommend reloading the page, unless you must do otherwise
-    if(_chainId==='0x13881'){
-      
-      localStorage.setItem('IsTestNet',JSON.stringify(true));
-    }else{
-      localStorage.setItem('IsTestNet',JSON.stringify(false));
-    }
-    
-    console.log(_chainId);
-    window.location.reload();
-  }
-
-  if(validateCurrentAccount('CurrentAccount') && typeof(window.ethereum) !== 'undefined'){
-    // Note that this event is emitted on page load.
-    // If the array of accounts is non-empty, you're already
-    // connected.
-    window.ethereum.on('accountsChanged', handleAccountsChanged);
-    window.ethereum.on('chainChanged', handleChainChanged);
+    // Do any other work!
   }
   
+}
+
+const handleChainChanged = async (chainId) => {
+  // We recommend reloading the page, unless you must do otherwise
+  let result = await validateNetWork(isTestNet,web3);
+  debugger;
+  if(!result){
+    await changeNetwork(isTestNet);  
+  }
+  
+  window.location.reload();
+}
+
+if(isAuthorized){
+  // Note that this event is emitted on page load.
+  // If the array of accounts is non-empty, you're already
+  // connected.
+  window.ethereum.on('accountsChanged', handleAccountsChanged);
+  window.ethereum.on('chainChanged', handleChainChanged);
+}
+  },[])
   
 
+  // async function addNetwork() {
+  //   debugger;
+  //   if (typeof web3 !== 'undefined') {
+        
+  //       var network = await web3.eth.net.getId();
+  //       var netID = network.toString();
+  //       var parms;
+        
+
+  //       if (!test) {
+  //           if (netID === "137") {
+  //               //alert("Polygon Network has already been added to Metamask.");
+  //               return JSON.stringify({status: "OK"});
+  //           }else{
+  //             parms = [{
+  //               chainId: '0x13881',
+  //               chainName: 'Polygon Testnet',
+  //               nativeCurrency: {
+  //                   name: 'MATIC',
+  //                   symbol: 'MATIC',
+  //                   decimals: 18
+  //               },
+  //               rpcUrls: ['https://matic-mumbai.chainstacklabs.com'],
+  //               blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+  //             }]
+  //           }
+  //       } else {
+  //           if (netID === "80001") {
+  //               //alert("Polygon Mumbai Network has already been added to Metamask.");
+  //               return JSON.stringify({status: "OK"});
+  //           }else{
+  //             parms = [{
+  //               //chainId: '0x89',
+  //               chainId: '0xfa',
+  //               chainName: 'Matic Mainnet',
+  //               nativeCurrency: {
+  //                   name: 'MATIC',
+  //                   symbol: 'MATIC',
+  //                   decimals: 18
+  //               },
+  //               rpcUrls: ['https://polygon-rpc.com/'],
+  //               blockExplorerUrls: ['https://polygonscan.com/']
+  //           }]
+  //           }
+  //       }
+        
+  //       window.ethereum.request({ method: 'wallet_addEthereumChain', parms })
+  //           .then((response) => {
+  //             console.log('Success: ' , response);
+  //             window.location.reload();
+  //           })
+  //           .catch((error) => {
+  //             console.log("Error: ", error.message)
+  //             return;
+  //           });
+  //   } else {
+  //       alert('Unable to locate a compatible web3 browser!');
+  //       return;
+  //   }
+  // } 
+  
   const walletBtnOnClick = async (e) => {
     e.preventDefault();
-    //is_testnet = JSON.parse(localStorage.getItem('IsTestNet'));
-    if(!validateCurrentAccount('CurrentAccount')){
-    
-      if(typeof(window.ethereum) == 'undefined'){
-        window.open("https://metamask.io/download/", "_self");
-          
-      }else if(window.ethereum.isConnected()){
-        const result = await addNetwork();
-        if(typeof(result) !== 'undefined'){
-
-          await window.ethereum.request({ method: 'eth_requestAccounts' })
-          .then((result) => {
-            debugger;
-            console.log("result: ", result);
-            connectAccount(result[0]);
-            window.location.href = "/generalView";
-          })
-          .catch((error) => {
-            console.log("error: ", error);
-          });
-        }
-      }
-    }else{
-      disconnectAccount();
-      window.location.reload();
+    if(typeof(web3) == 'undefined'){
+      window.open("https://metamask.io/download/", "_self");
+      return;   
     }
-    return;
+    let isValidated = await validateCurrentAccount(web3);
+    if(!isValidated){
+          let result = await changeNetwork(isTestNet);
+          
+            result = await web3.eth.requestAccounts();
+            try{
+              if(result){
+                debugger;
+                connectAccount(result[0]);
+                window.location.href = "/walletView";
+              }
+            }catch(error){
+              console.log("error: ", error);
+              return;
+            }
+         
+          
+    }else{
+      debugger;
+      disconnectAccount();
+      window.location.href = '/home';
+    }
+    
   }
 
   const openCloseMenu = (x)=> {
@@ -210,23 +195,23 @@ function Layout() {
           </div>
           
           {/* <NavLink to="/home" ><i className="fa fa-fw fa-home"></i> Home</NavLink>
-          <NavLink style={shouldEnable?{display: ""}:{display: "none"}} to="/aboutUs" ><i className="fa fa-users"></i> About Us</NavLink>
-          <NavLink style={shouldEnable?{display: ""}:{display: "none"}} to="/contact" ><i className="fa fa-compress"></i> Contact</NavLink> */}
+          <NavLink style={isAuthorized?{display: ""}:{display: "none"}} to="/aboutUs" ><i className="fa fa-users"></i> About Us</NavLink>
+          <NavLink style={isAuthorized?{display: ""}:{display: "none"}} to="/contact" ><i className="fa fa-compress"></i> Contact</NavLink> */}
           
           <div className="topnav-right">
-            <NavLink to="#" onClick={(e) => {walletBtnOnClick(e)}} >
+            <NavLink to="#" onClick={async(e) => {await walletBtnOnClick(e)}} >
               {/* <i className="fa fa-money"></i> */}
                { walletAction }</NavLink>
           </div>
           
             
           
-          <div style={shouldEnable?{display: ""}:{display: "none"}} className="dropdown">
+          <div style={isAuthorized?{display: ""}:{display: "none"}} className="dropdown">
             <button className="dropbtn"><span>Wallet </span>
               <i className="fa fa-caret-down"></i>
             </button>
             <div className="dropdown-content">
-              <NavLink to="/generalView" >General View</NavLink>
+              <NavLink to="/walletView" >General View</NavLink>
               {/* <NavLink to="/option2" >Option 2</NavLink>
               <NavLink to="/option3" >Option 3</NavLink> */}
             </div>
@@ -240,7 +225,7 @@ function Layout() {
       </div>
       <div className="outlet fullpage">
  
-        <Outlet context={[web3,setWeb3]}/>
+        <Outlet context={[web3]}/>
 
       </div>
       </div>

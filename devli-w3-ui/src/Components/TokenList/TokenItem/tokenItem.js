@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../../App";
 import { getERC20TokenAccountBalance } from "../../../Resourses/Services/polygonMaticService";
 import './tokenItem.css'
 
-const TokenItem = ({ token, current_account, parms,  filter= () => false }) => {
+const TokenItem = ({ token, filter= () => false }) => {
+    const [web3, isTestNet, currentAccount] = useContext(AppContext);
+
     const [tokenBalance, setTokenBalance] = useState(0)
-    const web3 = parms.web3;
-    const setWeb3 = parms.setWeb3;
     
     // The minimum ABI required to get the ERC20 Token balance
     const minABI = [
@@ -22,11 +23,11 @@ const TokenItem = ({ token, current_account, parms,  filter= () => false }) => {
     
     
     const getBalance = async (contract) => {
-        const balance = await contract.methods.balanceOf(current_account).call(); // 29803630997051883414242659
+        const balance = await contract.methods.balanceOf(currentAccount).call(); // 29803630997051883414242659
         if(balance){
-            const format_balance = web3.utils.fromWei(balance); // 29803630.997051883414242659
-            setTokenBalance(format_balance);
-            console.log(format_balance);
+            const formatBalance = web3.utils.fromWei(balance); // 29803630.997051883414242659
+            setTokenBalance(formatBalance);
+            console.log(formatBalance);
         }
     }
   
@@ -41,10 +42,10 @@ const TokenItem = ({ token, current_account, parms,  filter= () => false }) => {
             //Key is set up in config.js
             //const token_balance = await getERC20TokenAccountBalance(current_account, token.address);
         }
-        if (token && current_account) {
+        if (token && currentAccount) {
             getTokenBalance()
         }
-    }, [token, current_account])
+    }, [token, currentAccount])
 
     
     if (filter(tokenBalance)) {
