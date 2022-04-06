@@ -30,6 +30,7 @@ const connectAccount = (value) => {
 
 const disconnectAccount = () => {
     localStorage.removeItem('CurrentAccount');
+    window.location.href = '/home';
     return;
 }
 export {validateCurrentAccount, getCurrentAccount, setCurrentAccount, connectAccount, disconnectAccount};
