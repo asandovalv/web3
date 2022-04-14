@@ -16,10 +16,10 @@ function Layout() {
    //Initialize text for wallet action button on top right window corner
   const [walletAction, setWalletAction] = useState(""); 
 
-  let isAuthorized = false;
+  let [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(async()=>{
-    isAuthorized = await validateCurrentAccount(web3);
+    setIsAuthorized(await validateCurrentAccount(web3));
     if(typeof(web3) == 'undefined'){
       setWalletAction("Install Wallet");
     }else{
@@ -52,7 +52,7 @@ function Layout() {
     if(typeof(web3) == 'undefined'){
       window.open("https://metamask.io/download/", "_self");
     }
-    let isAuthorized = await validateCurrentAccount(web3);
+    setIsAuthorized(await validateCurrentAccount(web3));
     if(!isAuthorized){
           await changeNetwork(isTestNet);
           await connectToDefaultNetwork(isTestNet,web3);

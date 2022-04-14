@@ -81,4 +81,59 @@
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;
+    border-radius: 50%;
   }
+
+  
+* {box-sizing: border-box;}
+
+/* Style the input container */
+.input-container {
+  display: flex;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+/* Style the form icons */
+/* .icon {
+  padding: 10px;
+  background: dodgerblue;
+  color: white;
+  min-width: 50px;
+  text-align: center;
+} */
+form{
+  padding: 5px;
+}
+
+.input-container{
+  display: flex;
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+/* Style the input fields */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  outline: none;
+}
+
+.input-field:focus {
+  border: 2px solid dodgerblue;
+}
+
+/* Set a style for the submit button */
+.btn {
+  background-color: #0388e5;
+  color: white;
+  padding: 15px 20px;
+  border: none;
+  cursor: pointer;
+  width: 92%;
+  opacity: 0.9;
+}
+
+.btn:hover {
+  opacity: 1;
+}

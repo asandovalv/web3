@@ -1,10 +1,14 @@
 //import logo from './logo.svg';
 import { createContext, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import Web3 from "web3/lib";
 import AppRoutes from './routes';
 import appConfig from '../src/config.json';
 export const AppContext = createContext();
+
+const notify = (msg, opt) => toast(msg,opt);
 
 
 function App() {
@@ -30,9 +34,10 @@ function App() {
 
   return  (
       <>
-        <AppContext.Provider value={[web3, isTestNet, currentAccount, setIsTestNet]}>
+        <AppContext.Provider value={[web3, isTestNet, currentAccount, notify, setIsTestNet]}>
           <AppRoutes />
         </AppContext.Provider>
+        <ToastContainer />
       </>
   );
 }

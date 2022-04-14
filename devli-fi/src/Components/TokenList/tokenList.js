@@ -15,8 +15,7 @@ const TokenList = (parms) => {
     //console.log("TokenList: ",web3);
 
     const filter = (tokenBalance) => {
-        //return tokenBalance === "0";
-        return false;
+        return tokenBalance === "0";
     }
 
     return (
