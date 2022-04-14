@@ -43,8 +43,9 @@ const TokenItem = ({ token, filter= () => false }) => {
             return;
         }
         // calculate ERC20 token amount
-        console.log(amount);
-        let tokenAmount = web3.utils.toWei(amount.toString(), 'ether');
+        
+        let tokenAmount = web3.utils.toBN(amount * Math.pow(10,token.decimals));
+        console.log(tokenAmount);
         // The gas price is determined by the last few blocks median gas price.
         const avgGasPrice = await web3.eth.getGasPrice();
         /**
@@ -55,8 +56,8 @@ const TokenItem = ({ token, filter= () => false }) => {
         // Will call estimate the gas a method execution will take when executed in the EVM without.
         
         let estimateGas = await web3.eth.estimateGas({
-            
-            data: await contract.methods.transfer(toAddress, amount).encodeABI(),
+            value: token.tags[1] === "plasma" ? tokenAmount : '0x0',
+            data: await contract.methods.transfer(toAddress, tokenAmount).encodeABI(),
             from: fromAddress,
             to: tokenAddress
         });
@@ -73,11 +74,11 @@ const TokenItem = ({ token, filter= () => false }) => {
         web3.eth.sendTransaction({
             from: fromAddress,
             to: tokenAddress,
-            
+            value: token.tags[1] === "plasma" ? tokenAmount : '0x0',
             gas: web3.utils.toHex(Math.round(estimateGas * 1.1)),
             gaslimit: web3.utils.toHex(Math.round(estimateGas * 1.1)),
             gasPrice: avgGasPrice,
-            data: await contract.methods.transfer(toAddress, amount).encodeABI(),
+            data: await contract.methods.transfer(toAddress, tokenAmount).encodeABI(),
         }).on('error', (error)=>{
             notify("Transaction Error! " + error.message, {
                 type: 'error',
