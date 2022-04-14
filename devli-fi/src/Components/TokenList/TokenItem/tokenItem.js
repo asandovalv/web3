@@ -91,9 +91,12 @@ const TokenItem = ({ token, filter= () => false }) => {
                 notify("Transaction Successful!", {
                     type: 'success', 
                     theme: 'dark', 
-                    onClick: () => {window.location.href='https://blockscan.com/tx/' + receipt.transactionHash }});
-                    console.log(receipt);
+                    onClick: () => {window.location.href='https://blockscan.com/tx/' + receipt.transactionHash },
+                    onClose: () => {window.location.reload()}
                 });
+                    
+                    console.log(receipt);
+                })
             }catch(ex){
                 notify(ex, {
                     type: 'error',
